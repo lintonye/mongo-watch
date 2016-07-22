@@ -17,6 +17,8 @@ module.exports = ({db, host, port, dbOpts, serverOpts, username, password, authd
 
   client = new Db(db, connection, dbOpts)
 
+  console.log "MongoWatch: connecting to #{host}:#{port}... serverOpts:#{JSON.stringify(serverOpts)}, dbOpts:#{JSON.stringify(dbOpts)}"
+
   client.open (err) ->
     return done(err) if err
 

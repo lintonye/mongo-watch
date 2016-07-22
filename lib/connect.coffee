@@ -1,7 +1,7 @@
 {Server, Db, ReplSetServers} = require 'mongodb'
 _ = require 'lodash'
 
-module.exports = ({db, host, port, dbOpts, username, password, authdb, replicaSet}, done) ->
+module.exports = ({db, host, port, dbOpts, serverOpts, username, password, authdb, replicaSet}, done) ->
   _.merge {native_parser: true}, dbOpts
 
 
@@ -11,9 +11,9 @@ module.exports = ({db, host, port, dbOpts, username, password, authdb, replicaSe
       replSetServers.push new Server(replicaServer.host, replicaServer.port)
       return
 
-    connection = new ReplSetServers(replSetServers)
+    connection = new ReplSetServers(replSetServers, serverOpts)
   else
-    connection = new Server(host, port)
+    connection = new Server(host, port, serverOpts)
 
   client = new Db(db, connection, dbOpts)
 

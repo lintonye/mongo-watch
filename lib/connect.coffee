@@ -17,6 +17,11 @@ module.exports = ({db, host, port, dbOpts, serverOpts, username, password, authd
 
   client = new Db(db, connection, dbOpts)
 
+  console.log "Adding event listeners for debugging..."
+  events = ['authenticated', 'close', 'error', 'fullsetup', 'parseError', 'reconnect', 'timeout']
+  for event in events
+    client.on(event, (e) -> console.log "Oplog DB: #{event} occurred, #{e}")
+
   console.log "MongoWatch: connecting to #{host}:#{port}... serverOpts:#{JSON.stringify(serverOpts)}, dbOpts:#{JSON.stringify(dbOpts)}"
 
   client.open (err) ->

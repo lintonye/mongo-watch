@@ -11,6 +11,7 @@ applyDefaults = (options) ->
   options.replicaSet or= null
   options.dbOpts or= {w: 1}
   options.serverOpts or= null
+  options.dbListeners or= {}
   options.format or= 'raw'
   options.useMasterOplog or= false
   options.convertObjectIDs ?= true

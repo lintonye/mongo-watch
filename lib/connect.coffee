@@ -1,7 +1,9 @@
 {Server, Db, ReplSetServers} = require 'mongodb'
 _ = require 'lodash'
 
-module.exports = ({db, host, port, dbOpts, serverOpts, username, password, authdb, replicaSet}, done) ->
+log = (msg) -> console.log "#{new Date()} - MongoWatch - #{msg}"
+
+module.exports = ({db, host, port, dbOpts, serverOpts, dbListeners, username, password, authdb, replicaSet}, done) ->
   _.merge {native_parser: true}, dbOpts
 
 
@@ -17,10 +19,13 @@ module.exports = ({db, host, port, dbOpts, serverOpts, username, password, authd
 
   client = new Db(db, connection, dbOpts)
 
-  console.log "Adding event listeners for debugging..."
-  events = ['authenticated', 'close', 'error', 'fullsetup', 'parseError', 'reconnect', 'timeout']
-  for event in events
-    client.on(event, (e) -> console.log "Oplog DB: #{event} occurred, #{e}")
+  validEvents = ['authenticated', 'close', 'error', 'fullsetup', 'parseError', 'reconnect', 'timeout']
+  for event, listener of dbListeners
+    log "Adding listener: #{event}..."
+    if (validEvents.indexOf(event) < 0)
+      log "Invalid db event #{event}"
+    else
+      client.on(event, (e) -> listener(client, event, e)) if listener?
 
   console.log "MongoWatch: connecting to #{host}:#{port}... serverOpts:#{JSON.stringify(serverOpts)}, dbOpts:#{JSON.stringify(dbOpts)}"
 

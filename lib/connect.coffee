@@ -21,11 +21,11 @@ module.exports = ({db, host, port, dbOpts, serverOpts, dbListeners, username, pa
 
   validEvents = ['authenticated', 'close', 'error', 'fullsetup', 'parseError', 'reconnect', 'timeout']
   for event, listener of dbListeners
-    log "Adding listener: #{event}..."
     if (validEvents.indexOf(event) < 0)
       log "Invalid db event #{event}"
-    else
-      client.on(event, (e) -> listener(client, event, e)) if listener?
+    else if listener?
+      log "Adding listener: #{event}..."
+      client.on(event, (e) -> listener(client, event, e))
 
   console.log "MongoWatch: connecting to #{host}:#{port}... serverOpts:#{JSON.stringify(serverOpts)}, dbOpts:#{JSON.stringify(dbOpts)}"
 
